@@ -10,12 +10,12 @@ const zodSchema = () => {
 
   const AnswerJsonSchema = z.object({
     key: z.string().optional().nullable(),
-    value: z.any().optional().nullable(),
+    value: z.object({ anyvalue: z.string() }).optional().nullable(),
   });
 
   const ResultJsonSchema = z.object({
     key: z.string().optional().nullable(),
-    value: z.any().optional().nullable(),
+    value: z.object({ anyvalue: z.string() }).optional().nullable(),
   });
   const EntryJsonSchema = z.object({
     a: z.string().optional().nullable(),

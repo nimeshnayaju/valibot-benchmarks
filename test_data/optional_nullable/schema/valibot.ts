@@ -11,12 +11,12 @@ const valibotSchema = () => {
 
   const AnswerJsonSchema = v.object({
     key: v.nullable(v.optional(v.string())),
-    value: v.nullable(v.optional(v.any())),
+    value: v.nullable(v.optional(v.object({ anyvalue: v.string() }))),
   });
 
   const ResultJsonSchema = v.object({
     key: v.nullable(v.optional(v.string())),
-    value: v.nullable(v.optional(v.any())),
+    value: v.nullable(v.optional(v.object({ anyvalue: v.string() }))),
   });
 
   const EntryJsonSchema = v.object({

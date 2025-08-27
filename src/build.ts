@@ -2,7 +2,12 @@ import webpack from "webpack";
 import { minify } from "terser";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { TEST_DATA, getBenchmarkJsFilePath, isValibot } from "./test_data.js";
+import {
+  TEST_DATA,
+  getBenchmarkJsFilePath,
+  isValibot,
+  isValleys,
+} from "./test_data.js";
 import type { BenchmarkConfig } from "./types.js";
 
 const minifyJsFile = async (filePath: string) => {
@@ -17,7 +22,7 @@ export const assertNonNull = <T>(x: T | null | undefined): T => {
 };
 
 const runWebpack = (
-  webpackConfig: webpack.Configuration,
+  webpackConfig: webpack.Configuration
 ): Promise<webpack.Stats> =>
   new Promise((resolve, reject) => {
     webpack(webpackConfig, (err, stats) => {
@@ -141,11 +146,20 @@ export const buildForConfig = async (config: BenchmarkConfig) => {
 
     for (const schema of testData.schema) {
       const tmpFile = writeTmpFile(`
-        ${isValibot(schema) ? "import { safeParse } from 'valibot';" : ""}
+        ${
+          isValibot(schema)
+            ? "import { safeParse } from 'valibot';"
+            : isValleys(schema)
+            ? "import { validate } from 'valleys'"
+            : ""
+        }
         import schema from ${JSON.stringify(schema.filePath)};
-        globalThis.BENCHMARK_VAR_SCHEMA_SAFE_PARSE = ${isValibot(schema)
-          ? "(data) => safeParse(schema, data)"
-          : "(data) => schema.safeParse(data)"
+        globalThis.BENCHMARK_VAR_SCHEMA_SAFE_PARSE = ${
+          isValibot(schema)
+            ? "(data) => safeParse(schema, data)"
+            : isValleys(schema)
+            ? "(data) => { const result = schema.unstable_validate(data); if (result.error) { return { success: false, error: result.error }; } return { success: true, data: result.data }; }"
+            : "(data) => schema.safeParse(data)"
         };
     `);
       await build({
@@ -160,11 +174,11 @@ export const buildForConfig = async (config: BenchmarkConfig) => {
       for (const schema of testData.schema) {
         const schemaJsFilePath = path.join(
           "dist/schema",
-          testDataName + "__" + schema.name + ".js",
+          testDataName + "__" + schema.name + ".js"
         );
         const dataJsFilePath = path.join(
           "dist/data",
-          testDataName + "__" + data.name + ".js",
+          testDataName + "__" + data.name + ".js"
         );
 
         const benchmarkJsCode = `"use strict";
@@ -173,8 +187,12 @@ export const buildForConfig = async (config: BenchmarkConfig) => {
       ${generateBenchmarkJs(config)}`;
         fs.mkdirSync("dist/benchmark", { recursive: true });
         fs.writeFileSync(
-          getBenchmarkJsFilePath({ schema: testDataName, data: data.name, lib: schema.name }),
-          benchmarkJsCode,
+          getBenchmarkJsFilePath({
+            schema: testDataName,
+            data: data.name,
+            lib: schema.name,
+          }),
+          benchmarkJsCode
         );
       }
     }

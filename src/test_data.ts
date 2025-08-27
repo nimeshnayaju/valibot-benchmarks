@@ -18,6 +18,10 @@ export const isValibot = (schema: Schema): boolean => {
   return schema.name.startsWith("valibot");
 };
 
+export const isValleys = (schema: Schema): boolean => {
+  return schema.name.startsWith("valleys");
+};
+
 type TestData = Record<string, { schema: Schema[]; data: Data[] }>;
 
 export const TEST_DATA = (config: BenchmarkConfig): TestData =>
@@ -57,7 +61,7 @@ export const TEST_DATA = (config: BenchmarkConfig): TestData =>
           })),
         },
       ];
-    }),
+    })
   );
 
 export const getBenchmarkJsFilePath = ({

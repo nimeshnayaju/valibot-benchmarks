@@ -4,6 +4,8 @@ export interface BenchmarkConfig {
   libs: string[];
   durationMs: number;
   iterationsCount: number;
+  baseline: string;
+  target: string;
   runners: RunnerType[];
 }
 
