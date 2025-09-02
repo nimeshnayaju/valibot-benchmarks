@@ -51,7 +51,7 @@
     "tsx": "3.12.7",
     "typescript": "5.1.6",
     "valibot": "1.1.0",
-    "valleys": "0.0.3",
+    "valleys": "0.0.5",
     "vitest": "0.34.2",
     "webpack": "5.88.2",
     "webpack-cli": "5.1.4",
